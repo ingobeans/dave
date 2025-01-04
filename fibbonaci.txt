@@ -1,0 +1,19 @@
+wrb 1i
+stb 4i
+lda 0i
+add
+wra 0i
+ldb 4i
+stb 1i
+ldb 2i
+wrb 4i
+ldb 1i
+wrb 2i
+lda 4i
+add
+lda 0i
+wrb 10i
+xor
+wrb 1i
+gnz 5i
+hlt
