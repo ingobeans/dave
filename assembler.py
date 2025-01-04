@@ -1,4 +1,4 @@
-import sys
+import sys, emulator
 
 instructions = {
     "nop": "00000000",
@@ -35,7 +35,7 @@ def assemble(lines:list[str])->list[str]:
             if word in instructions:
                 word = instructions[word]
             elif word.endswith("i"):
-                word = '{0:07b}'.format(int(word[:-1]))
+                word = '{0:08b}'.format(int(word[:-1]))
             
             new += word
         length = len(new)
@@ -52,4 +52,9 @@ if __name__ == "__main__":
         asm = f.read().split("\n")
     binary = assemble(asm)
     text = "\n".join(binary)
-    print(text)
+    with open("binary.txt","w") as f:
+        f.write(text)
+    
+    dave = emulator.Dave()
+    dave.execute(binary)
+    print(dave.reg_a)

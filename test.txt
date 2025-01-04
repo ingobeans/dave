@@ -1,0 +1,2 @@
+wra 3i
+hlt
