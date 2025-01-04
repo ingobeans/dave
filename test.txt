@@ -1,2 +1,3 @@
-wra 3i
-hlt
+wrb 1i
+add
+goto 1i

@@ -56,5 +56,4 @@ if __name__ == "__main__":
         f.write(text)
     
     dave = emulator.Dave()
-    dave.execute(binary)
-    print(dave.reg_a)
+    dave.execute(binary, True)

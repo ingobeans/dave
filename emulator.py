@@ -2,7 +2,7 @@ def binary_to_int(binary:str)->int:
     return int(binary, 2)
 
 def int_to_binary(number:int)->str:
-    return '{0:07b}'.format(number)
+    return '{0:08b}'.format(number)[:8]
 
 class Dave:
     def __init__(self):
@@ -10,12 +10,19 @@ class Dave:
         self.reg_a = "00000000"
         self.reg_b = "00000000"
         self.program_counter = 0
-    def execute(self, binary:list[str]):
+    def execute(self, binary:list[str], step:bool):
+        print(chr(27) + "[2J", flush=True)
         while True:
             instruction = binary[self.program_counter]
             self.program_counter += 1
             opcode = instruction[:8]
             operand = instruction[8:]
+
+            old_ram = self.ram.copy()
+            old_reg_a = self.reg_a
+            old_reg_b = self.reg_b
+            old_program_counter = self.program_counter
+
             match opcode:
                 case "00000000": #nop
                     pass
@@ -69,3 +76,11 @@ class Dave:
                 case _:
                     print(f"instruction {opcode} doesnt exist")
                     quit()
+
+            if old_ram != self.ram or old_reg_a != self.reg_a or old_reg_b != self.reg_b or old_program_counter != self.program_counter:
+                print(chr(27) + "[H", flush=False)
+                print("\n".join(self.ram[:8]), flush=False)
+                print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
+                print("",flush=True)
+            if step:
+                input(chr(27) + "[H")
