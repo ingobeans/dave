@@ -16,8 +16,8 @@ class Dave:
             while True:
                 instruction = binary[self.program_counter]
                 self.program_counter += 1
-                opcode = instruction[:8]
-                operand = instruction[8:]
+                opcode = instruction[8:]
+                operand = instruction[:8]
 
                 old_ram = self.ram.copy()
                 old_reg_a = self.reg_a

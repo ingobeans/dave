@@ -30,17 +30,19 @@ def assemble(lines:list[str])->list[str]:
     binary = []
     for line in lines:
         words = line.lower().split(" ")
-        new = ""
+        new = []
         for word in words:
             if word in instructions:
                 word = instructions[word]
             elif word.endswith("i"):
                 word = '{0:08b}'.format(int(word[:-1]))
             
-            new += word
+            new.append(word)
+        new.reverse()
+        new = "".join(new)
         length = len(new)
         if length < 16:
-            new += "0"*(16-length)
+            new = "0"*(16-length) + new
         binary.append(new)
     return binary
 
