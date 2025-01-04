@@ -54,6 +54,12 @@ if __name__ == "__main__":
     text = "\n".join(binary)
     with open("binary.txt","w") as f:
         f.write(text)
+    with open("readable.txt","w",encoding="utf-8") as f:
+        replaced = text.replace("1","■").replace("0","□")
+        new = ""
+        for t in replaced.split("\n"):
+            new += t[:8] + " " + t[8:] + "\n"
+        f.write(new)
     
     dave = emulator.Dave()
-    dave.execute(binary, True)
+    dave.execute(binary, False)
