@@ -77,12 +77,11 @@ class Dave:
                     case _:
                         print(f"instruction {opcode} doesnt exist")
                         quit()
-
-                if old_ram != self.ram or old_reg_a != self.reg_a or old_reg_b != self.reg_b or old_program_counter != self.program_counter:
-                    print(chr(27) + "[H", flush=False)
-                    print("\n".join(self.ram[:8]), flush=False)
-                    print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
-                    print("",flush=True)
+                        
+                print(chr(27) + "[H", flush=False)
+                print("\n".join(self.ram[:8]), flush=False)
+                print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
+                print("",flush=True)
                 if step:
                     input(chr(27) + "[H")
                     print(chr(27) + "[2J", flush=True)
