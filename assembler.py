@@ -46,17 +46,12 @@ def assemble(lines:list[str])->list[str]:
         binary.append(new)
     return binary
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("no input file specified")
-        quit()
-    with open(sys.argv[1],"r") as f:
-        asm = f.read().split("\n")
+def assemble_and_run(asm:list[str], step=False):
     binary = assemble(asm)
     text = "\n".join(binary)
-    with open("binary.txt","w") as f:
+    with open("output/binary.txt","w") as f:
         f.write(text)
-    with open("readable.txt","w",encoding="utf-8") as f:
+    with open("output/readable.txt","w",encoding="utf-8") as f:
         replaced = text.replace("1","■").replace("0","□")
         new = ""
         for t in replaced.split("\n"):
@@ -64,4 +59,12 @@ if __name__ == "__main__":
         f.write(new)
     
     dave = emulator.Dave()
-    dave.execute(binary, False)
+    dave.execute(binary, step)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("no input file specified")
+        quit()
+    with open(sys.argv[1],"r") as f:
+        asm = f.read().split("\n")
+    assemble_and_run(asm)
