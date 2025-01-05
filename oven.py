@@ -94,7 +94,7 @@ def tokenize(code:str, depth=0, token_amount:int=None)->list[GenericToken]:
                 index += add_index
             case "==":
                 tokens.append(EqualsToken())
-            case "==":
+            case "!=":
                 tokens.append(NotEqualsToken())
             case "{":
                 block, add_index = tokenize(" ".join(words[index:]),depth+1)
@@ -144,7 +144,10 @@ def tokens_to_asm(token_block:BlockToken, sections:list[list], variables={}, reg
             data[2] += [f"goto {pointer_counter}&"]
             sections[-1] += data[1]
             sections[-1] += data[0]
-            sections[-1] += ["xor",f"giz {len(sections)}$", f"pointer {pointer_counter}"]
+            if type(token.comparer) == EqualsToken:
+                sections[-1] += ["xor",f"giz {len(sections)}$", f"pointer {pointer_counter}"]
+            elif type(token.comparer) == NotEqualsToken:
+                sections[-1] += ["xor",f"gnz {len(sections)}$", f"pointer {pointer_counter}"]
             sections.append(data[2])
             pointer_counter += 1
             reg_a,reg_b = None, None

@@ -5,7 +5,7 @@ joel = {5}
 
 //joel = {8}
 
-if {joel} == {wahoo} {
+if {joel} != {wahoo} {
     joel = {0}
 }
 
