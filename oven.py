@@ -61,10 +61,10 @@ class NotEqualsToken(BlockToken):
         return color.yellow("!=")
 
 def tokenize(code:str, depth=0, token_amount:int=None)->list[GenericToken]:
+    code = re.sub(r"(\/\/.+)","",code)
     code = code.replace("\n"," ")
     code = code.replace("{","{ ")
     code = code.replace("}"," }")
-    code = re.sub(r"(\/\/.+)","",code)
     words = code.split(" ")
     words = [word for word in words if len(word) != 0]
     tokens = BlockToken()
