@@ -1,12 +1,7 @@
-let wahoo
-let joel
-wahoo = {8}
-joel = {5}
+let counter
 
-//joel = {8}
-
-if {joel} != {wahoo} {
-    joel = {0}
+if {counter} == {0} {
+    counter = {5}
 }
 
-joel
+counter

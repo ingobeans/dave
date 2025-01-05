@@ -114,6 +114,7 @@ def tokenize(code:str, depth=0, token_amount:int=None)->list[GenericToken]:
 
 def tokens_to_asm(token_block:BlockToken, sections:list[list], variables={}, reg_a=0, reg_b=0, pointer_counter=0)->list[str]:
     sections.append([])
+    current_section_index = len(sections) - 1
     for index, token in enumerate(token_block.subtokens):
         if type(token) == BlockToken:
             reg_a, reg_b = tokens_to_asm(token, sections, variables, reg_a, reg_b)
@@ -121,20 +122,20 @@ def tokens_to_asm(token_block:BlockToken, sections:list[list], variables={}, reg
             if not token.name in variables:
                 print(f"undefined variable {token}")
             if index == len(token_block.subtokens) - 1:
-                sections[-1].append(f"lda {variables[token.name]}i")
+                sections[current_section_index].append(f"lda {variables[token.name]}i")
         elif type(token) == LetToken:
             variables[token.variable_name] = max(list(variables.values()))+1 if variables else 1
         elif type(token) == NumberToken:
             if reg_a != token.value:
-                sections[-1].append(f"wra {token.value}i")
+                sections[current_section_index].append(f"wra {token.value}i")
             if index == len(token_block.subtokens) - 1:
                 reg_a = token.value
         elif type(token) == SetToken:
             data = []
             reg_a, reg_b = tokens_to_asm(token.expression, data, variables, reg_a, reg_b, pointer_counter)
             asm = data[0]
-            sections[-1] += asm
-            sections[-1].append(f"sta {variables[token.variable_name.name]}i")
+            sections[current_section_index] += asm
+            sections[current_section_index].append(f"sta {variables[token.variable_name.name]}i")
         elif type(token) == IfToken:
             data = []
             reg_a,reg_b = tokens_to_asm(token.lhs,data,variables,reg_a,reg_b, pointer_counter)
@@ -142,12 +143,12 @@ def tokens_to_asm(token_block:BlockToken, sections:list[list], variables={}, reg
             reg_a,reg_b = tokens_to_asm(token.block,data,variables,reg_a,reg_b, pointer_counter)
             data[1] += ["sta 0i","ldb 0i"]
             data[2] += [f"goto {pointer_counter}&"]
-            sections[-1] += data[1]
-            sections[-1] += data[0]
+            sections[current_section_index] += data[1]
+            sections[current_section_index] += data[0]
             if type(token.comparer) == EqualsToken:
-                sections[-1] += ["xor",f"giz {len(sections)}$", f"pointer {pointer_counter}"]
+                sections[current_section_index] += ["xor",f"giz {len(sections)}$", f"pointer {pointer_counter}"]
             elif type(token.comparer) == NotEqualsToken:
-                sections[-1] += ["xor",f"gnz {len(sections)}$", f"pointer {pointer_counter}"]
+                sections[current_section_index] += ["xor",f"gnz {len(sections)}$", f"pointer {pointer_counter}"]
             sections.append(data[2])
             pointer_counter += 1
             reg_a,reg_b = None, None
@@ -171,6 +172,7 @@ def compile(token_block:BlockToken)->list[str]:
 
     for i in sections[0]:
         asm.append(Instruction(i,0))
+    print(asm)
     asm.append(Instruction("hlt",0))
     for index, section in enumerate(sections[1:]):
         for i in section:
@@ -205,7 +207,7 @@ def compile(token_block:BlockToken)->list[str]:
         text = f"{parts[0]} {count}i"
         source = asm[jump].source
         asm[jump] = Instruction(text,source)
-
+    print(asm)
     text = []
     for i in asm:
         text.append(i.text)
