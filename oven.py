@@ -1,4 +1,4 @@
-import sys, color, assembler
+import sys, color, assembler, re
 
 class BlockToken:
     def __init__(self):
@@ -64,6 +64,7 @@ def tokenize(code:str, depth=0, token_amount:int=None)->list[GenericToken]:
     code = code.replace("\n"," ")
     code = code.replace("{","{ ")
     code = code.replace("}"," }")
+    code = re.sub(r"(\/\/.+)","",code)
     words = code.split(" ")
     words = [word for word in words if len(word) != 0]
     tokens = BlockToken()

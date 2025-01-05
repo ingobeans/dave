@@ -1,5 +1,5 @@
 {
     "files.associations": {
-        "*.dough": "coffeescript" // this one adds syntax highlighting that looks good for .dough
+        "*.dough": "swift" // this one adds syntax highlighting that looks good for .dough
     }
 }
