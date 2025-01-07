@@ -30,6 +30,8 @@ def assemble(lines:list[str])->list[str]:
     binary = []
 
     labels = {}
+    substitutes = {}
+
     index = -1
     while True:
         index += 1
@@ -40,7 +42,10 @@ def assemble(lines:list[str])->list[str]:
         line = lines[index]
         line = line.strip()
         line = re.sub(r"(#.+)","",line)
+
         lines[index] = line
+
+        words = line.split(" ")
 
         if not line:
             lines.remove(line)
@@ -53,17 +58,28 @@ def assemble(lines:list[str])->list[str]:
             labels[line[:-1]] = index
             lines.remove(line)
             index -= 1
+        elif words[0] == "define":
+            substitutes[words[1]] = words[2]
+            lines.remove(line)
+            index -= 1
     
-    # replace labels
     for index, line in enumerate(lines):
         for word in line.split(" "):
+            # replace labels
             if word in labels:
                 lines[index] = line.replace(word,f"{labels[word]}i")
+            # replace substitutes
+            elif word in substitutes:
+                lines[index] = line.replace(word,substitutes[word])
+    
+    with open("output/asm.txt","w") as f:
+        f.write("\n".join(lines))
 
     # replace instructions with binary
     for line in lines:
         words = line.lower().split(" ")
         new = "0000000000000000"
+        first = True
         for word in words:
             if not word:
                 continue
@@ -71,6 +87,12 @@ def assemble(lines:list[str])->list[str]:
                 new = new[:8] + instructions[word]
             elif word.endswith("i"):
                 new = '{0:08b}'.format(int(word[:-1])) + new[8:]
+            elif word.endswith("i4"):
+                if first:
+                    first = False
+                    new = '{0:04b}'.format(int(word[:-2])) + new[4:]
+                else:
+                    new = new[:4] + '{0:04b}'.format(int(word[:-2])) + new[8:]
             elif len(word) == 8 and all([True if c == "1" or c == "0" else False for c in word]):
                 new = word + new[8:]
             else:
@@ -100,4 +122,4 @@ if __name__ == "__main__":
         quit()
     with open(sys.argv[1],"r") as f:
         asm = f.read().split("\n")
-    assemble_and_run(asm)
+    assemble_and_run(asm, False)

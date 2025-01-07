@@ -19,11 +19,6 @@ class Dave:
                 opcode = instruction[8:]
                 operand = instruction[:8]
 
-                old_ram = self.ram.copy()
-                old_reg_a = self.reg_a
-                old_reg_b = self.reg_b
-                old_program_counter = self.program_counter
-
                 match opcode:
                     case "00000000": #nop
                         pass
@@ -79,7 +74,9 @@ class Dave:
                         quit()
                         
                 print(chr(27) + "[H", flush=False)
-                print("\n".join(self.ram[:8]), flush=False)
+                #print("\n".join(self.ram[:8]), flush=False)
+                for index, byte in enumerate(self.ram[:8]):
+                    print(f"{index}: {binary_to_int(byte)}", flush=False)
                 print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
                 print("",flush=True)
                 if step:
