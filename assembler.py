@@ -92,7 +92,7 @@ def assemble_and_run(asm:list[str], step=False):
         f.write(new)
     
     dave = emulator.Dave()
-    #dave.execute(binary, step)
+    dave.execute(binary, step)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
