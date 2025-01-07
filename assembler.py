@@ -29,13 +29,14 @@ instructions = {
 def assemble(lines:list[str])->list[str]:
     binary = []
 
-    # replace labels
     labels = {}
     index = -1
     while True:
         index += 1
         if index >= len(lines):
             break
+        
+        # remove comments and strip line
         line = lines[index]
         line = line.strip()
         line = re.sub(r"(#.+)","",line)
@@ -45,6 +46,7 @@ def assemble(lines:list[str])->list[str]:
             lines.remove(line)
             index -= 1
         elif line.endswith(":"):
+            # find and note labels
             if line[:-1] in labels:
                 print(f"label {line[:-1]} already exists!")
                 quit()
@@ -52,10 +54,10 @@ def assemble(lines:list[str])->list[str]:
             lines.remove(line)
             index -= 1
     
+    # replace labels
     for index, line in enumerate(lines):
         for word in line.split(" "):
             if word in labels:
-                print(f"{labels[word]}i")
                 lines[index] = line.replace(word,f"{labels[word]}i")
 
     # replace instructions with binary
@@ -69,6 +71,11 @@ def assemble(lines:list[str])->list[str]:
                 new = new[:8] + instructions[word]
             elif word.endswith("i"):
                 new = '{0:08b}'.format(int(word[:-1])) + new[8:]
+            elif len(word) == 8 and all([True if c == "1" or c == "0" else False for c in word]):
+                new = word + new[8:]
+            else:
+                print(f"unknown symbol '{word}'")
+                quit()
         binary.append(new)
     return binary
 
@@ -85,7 +92,7 @@ def assemble_and_run(asm:list[str], step=False):
         f.write(new)
     
     dave = emulator.Dave()
-    dave.execute(binary, step)
+    #dave.execute(binary, step)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
