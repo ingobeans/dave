@@ -1,4 +1,4 @@
-import sys, emulator
+import sys, emulator, re
 
 instructions = {
     "nop": "00000000",
@@ -28,21 +28,47 @@ instructions = {
 
 def assemble(lines:list[str])->list[str]:
     binary = []
+
+    # replace labels
+    labels = {}
+    index = -1
+    while True:
+        index += 1
+        if index >= len(lines):
+            break
+        line = lines[index]
+        line = line.strip()
+        line = re.sub(r"(#.+)","",line)
+        lines[index] = line
+
+        if not line:
+            lines.remove(line)
+            index -= 1
+        elif line.endswith(":"):
+            if line[:-1] in labels:
+                print(f"label {line[:-1]} already exists!")
+                quit()
+            labels[line[:-1]] = index
+            lines.remove(line)
+            index -= 1
+    
+    for index, line in enumerate(lines):
+        for word in line.split(" "):
+            if word in labels:
+                print(f"{labels[word]}i")
+                lines[index] = line.replace(word,f"{labels[word]}i")
+
+    # replace instructions with binary
     for line in lines:
         words = line.lower().split(" ")
-        new = []
+        new = "0000000000000000"
         for word in words:
+            if not word:
+                continue
             if word in instructions:
-                word = instructions[word]
+                new = new[:8] + instructions[word]
             elif word.endswith("i"):
-                word = '{0:08b}'.format(int(word[:-1]))
-            
-            new.append(word)
-        new.reverse()
-        new = "".join(new)
-        length = len(new)
-        if length < 16:
-            new = "0"*(16-length) + new
+                new = '{0:08b}'.format(int(word[:-1])) + new[8:]
         binary.append(new)
     return binary
 
