@@ -4,9 +4,54 @@ def binary_to_int(binary:str)->int:
 def int_to_binary(number:int)->str:
     return '{0:08b}'.format(number)[:8]
 
+class Device:
+    def __init__(self):
+        pass
+    def write(self, byte:str, pos:str):
+        pass
+    def read(self, pos)->str:
+        pass
+    def display(self)->str|None:
+        pass
+
+class Ram(Device):
+    def __init__(self):
+        self.data = ["00000000" for _ in range(16)]
+    def write(self, byte:str, pos:str):
+        self.data[binary_to_int(pos)] = byte
+    def read(self, pos)->str:
+        return self.data[binary_to_int(pos)]
+    def display(self)->str|None:
+        not_empty = any([not all([c == "0" for c in b]) for b in self.data])
+        if not_empty:
+            return "\n\t"+"\n\t".join(self.data)
+
+class Screen(Device):
+    def __init__(self):
+        self.data = ["0000000000000000" for _ in range(8)]
+        self.displayed_data = ["0000000000000000" for _ in range(8)]
+    def write(self, byte:str, pos:str):
+        x = binary_to_int(byte[1:5])
+        y = 7-binary_to_int(byte[5:8])
+        write = byte[0]
+        if write == "1":
+            self.displayed_data = self.data.copy()
+            self.data = ["0000000000000000" for _ in range(8)]
+        else:
+            if y >= 0 and y < 8 and x >= 0 and x < 16:
+                self.data[y] = self.data[y][:x] + "1" + self.data[y][x + 1:]
+    def read(self, pos)->str:
+        return "00000000"
+    def display(self)->str|None:
+        return "\n\t"+"\n\t".join(self.displayed_data)
+
 class Dave:
     def __init__(self):
-        self.ram = ["00000000" for _ in range(32)]
+        self.devices:list[Device] = {
+            0: Ram(), 
+            1: Ram(),
+            7: Screen()
+        }
         self.reg_a = "00000000"
         self.reg_b = "00000000"
         self.program_counter = 0
@@ -19,17 +64,20 @@ class Dave:
                 opcode = instruction[8:]
                 operand = instruction[:8]
 
+                # used for devices
+                device_pos, data_pos = binary_to_int(operand[:4]), operand[4:]
+
                 match opcode:
                     case "00000000": #nop
                         pass
                     case "00000001": #lda
-                        self.reg_a = self.ram[binary_to_int(operand)]
+                        self.reg_a = self.devices[device_pos].read(data_pos)
                     case "00000010": #ldb
-                        self.reg_b = self.ram[binary_to_int(operand)]
+                        self.reg_b = self.devices[device_pos].read(data_pos)
                     case "00000011": #sta
-                        self.ram[binary_to_int(operand)] = self.reg_a
+                        self.devices[device_pos].write(self.reg_a, data_pos)
                     case "00000100": #stb
-                        self.ram[binary_to_int(operand)] = self.reg_b
+                        self.devices[device_pos].write(self.reg_b, data_pos)
                     case "00000101": #add
                         self.reg_a = int_to_binary(binary_to_int(self.reg_a) + binary_to_int(self.reg_b))
                     case "00000110": #sub
@@ -75,8 +123,10 @@ class Dave:
                         
                 print(chr(27) + "[H", flush=False)
                 #print("\n".join(self.ram[:8]), flush=False)
-                for index, byte in enumerate(self.ram[:8]):
-                    print(f"{index}: {binary_to_int(byte)}", flush=False)
+                for index, device in enumerate(self.devices):
+                    display = self.devices[device].display()
+                    if display:
+                        print(f"device {index}: {display}", flush=False)
                 print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
                 print("",flush=True)
                 if step:
