@@ -4,6 +4,8 @@ def binary_to_int(binary:str)->int:
     return int(binary, 2)
 
 def int_to_binary(number:int)->str:
+    if number < 0:
+        number = 255
     return '{0:08b}'.format(number)[:8]
 
 class Device:
