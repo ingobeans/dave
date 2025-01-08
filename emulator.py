@@ -1,4 +1,4 @@
-import keyboard, time
+import keyboard, time, color
 
 def binary_to_int(binary:str)->int:
     return int(binary, 2)
@@ -52,7 +52,7 @@ class Screen(Device):
             state = state[:7] + "1" + state[7 + 1:]
         return state
     def display(self)->str|None:
-        return "\n\t"+"\n\t".join(self.displayed_data)
+        return "\n\t"+"\n\t".join([text.replace("1","█").replace("0",color.blue("█")) for text in self.displayed_data])
 
 class Dave:
     def __init__(self):
