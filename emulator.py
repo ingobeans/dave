@@ -1,3 +1,5 @@
+import keyboard
+
 def binary_to_int(binary:str)->int:
     return int(binary, 2)
 
@@ -41,7 +43,14 @@ class Screen(Device):
             if y >= 0 and y < 8 and x >= 0 and x < 16:
                 self.data[y] = self.data[y][:x] + "1" + self.data[y][x + 1:]
     def read(self, pos)->str:
-        return "00000000"
+        state = "00000000"
+        is_a_pressed = keyboard.is_pressed("a")
+        is_d_pressed = keyboard.is_pressed("d")
+        if is_a_pressed:
+            state = state[:6] + "1" + state[6 + 1:]
+        if is_d_pressed:
+            state = state[:7] + "1" + state[7 + 1:]
+        return state
     def display(self)->str|None:
         return "\n\t"+"\n\t".join(self.displayed_data)
 
@@ -55,7 +64,7 @@ class Dave:
         self.reg_a = "00000000"
         self.reg_b = "00000000"
         self.program_counter = 0
-    def execute(self, binary:list[str], step:bool):
+    def execute(self, binary:list[str], step:bool, only_screen:bool=True):
         try:
             print(chr(27) + "[2J", flush=True)
             while True:
@@ -125,13 +134,17 @@ class Dave:
                         quit()
                         
                 print(chr(27) + "[H", flush=False)
-                #print("\n".join(self.ram[:8]), flush=False)
-                for index, device in enumerate(self.devices):
-                    display = self.devices[device].display()
-                    if display:
-                        print(f"device {index}: {display}", flush=False)
-                print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
-                print("",flush=True)
+                
+                if not only_screen:
+                    for index, device in enumerate(self.devices):
+                        display = self.devices[device].display()
+                        if display:
+                            print(f"device {index}: {display}", flush=False)
+                    print(f"\n{self.reg_a=}\t{self.reg_b=}\t{self.program_counter=}", flush=False)
+                    print("",flush=True)
+                else:
+                    print(f"{self.devices[7].display()}")
+                    print(chr(27) + "[H", flush=True)
                 if step:
                     input(chr(27) + "[H")
                     print(chr(27) + "[2J", flush=True)
