@@ -1,4 +1,4 @@
-import keyboard
+import keyboard, time
 
 def binary_to_int(binary:str)->int:
     return int(binary, 2)
@@ -64,7 +64,7 @@ class Dave:
         self.reg_a = "00000000"
         self.reg_b = "00000000"
         self.program_counter = 0
-    def execute(self, binary:list[str], step:bool, only_screen:bool=True):
+    def execute(self, binary:list[str], step:bool, only_screen=True, time_per_instruction=0.0055):
         try:
             print(chr(27) + "[2J", flush=True)
             while True:
@@ -148,6 +148,8 @@ class Dave:
                 if step:
                     input(chr(27) + "[H")
                     print(chr(27) + "[2J", flush=True)
+                if time_per_instruction > 0:
+                    time.sleep(time_per_instruction)
         except KeyboardInterrupt:
             print(chr(27) + "[H", flush=False)
             print(chr(27) + "[2J", flush=True)
