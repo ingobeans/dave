@@ -59,6 +59,9 @@ class Dave:
         try:
             print(chr(27) + "[2J", flush=True)
             while True:
+                if self.program_counter >= len(binary):
+                    print("reached end of file!")
+                    break
                 instruction = binary[self.program_counter]
                 self.program_counter += 1
                 opcode = instruction[8:]
