@@ -95,7 +95,10 @@ class Dave:
                     case "00000101": #add
                         self.reg_a = int_to_binary(binary_to_int(self.reg_a) + binary_to_int(self.reg_b))
                     case "00000110": #sub
-                        self.reg_a = int_to_binary(binary_to_int(self.reg_a) - binary_to_int(self.reg_b))
+                        value = binary_to_int(self.reg_a) - binary_to_int(self.reg_b)
+                        if value < 0:
+                            value = 255
+                        self.reg_a = int_to_binary(value)
                     case "00000111": #mul
                         self.reg_a = int_to_binary(binary_to_int(self.reg_a) * binary_to_int(self.reg_b))
                     case "00001000": #div
