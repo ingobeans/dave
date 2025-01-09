@@ -6,7 +6,6 @@ main:
 # set up variables
     wra 0i
     sta dino_y_pos
-
     wra 16i
     sta cactus_x_pos
 
@@ -21,6 +20,12 @@ loop:
     xor
     giz jump
 
+    lda cactus_x_pos
+    wrb 4i
+    xor
+    giz lose
+    wrb 1i
+
 draw:
 # move cactus
     lda cactus_x_pos
@@ -28,11 +33,12 @@ draw:
     sta cactus_x_pos
 # draw cactus
     lda cactus_x_pos
-    shl
-    shl
-    shl
-    wrb 01111000
+    wrb 00001111
     and
+    sta cactus_x_pos
+    shl
+    shl
+    shl
     sta 7i4 0i4
 
 # draw dino
@@ -61,3 +67,11 @@ fall:
     sub
     sta dino_y_pos
     goto draw
+
+lose:
+    lda dino_y_pos
+    wrb 0i
+    xor
+    wrb 1i
+    gnz draw
+hlt
