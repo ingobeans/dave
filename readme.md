@@ -12,10 +12,10 @@ recommended extension: [Assembler code syntax and highlight](https://marketplace
 
 ```
 X 00000000			nop
-X 00000001	i4 i4	lda
-X 00000010	i4 i4	ldb
-X 00000011	i4 i4	sta
-X 00000100	i4 i4	stb
+X 00000001	i4 i4	        lda
+X 00000010	i4 i4	        ldb
+X 00000011	i4 i4	        sta
+X 00000100	i4 i4	        stb
 _ 00000101			add
 _ 00000110			sub
 _ 00000111			mul
