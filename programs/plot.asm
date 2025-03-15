@@ -2,11 +2,10 @@ define current_x 0i
 define current_y 1i
 define temp_x 2i
 
-define slope_value 2i
+define slope_value 1i
 
 loop:
     lda current_x
-    shl
     shl
     shl
     shl
@@ -41,4 +40,5 @@ end:
 # flush screen
     wra 10000000
     sta 7i4 0i4
-    hlt
+    f:
+    goto f
